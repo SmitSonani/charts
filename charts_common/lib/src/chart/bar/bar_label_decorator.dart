@@ -61,6 +61,9 @@ class BarLabelDecorator<D> extends BarRendererDecorator<D> {
   /// Space before and after the label text.
   final int labelPadding;
 
+  // Allows label to overflow beyond the bounds
+  final bool unboundedWidth;
+
   BarLabelDecorator({
     TextStyleSpec? insideLabelStyleSpec,
     TextStyleSpec? outsideLabelStyleSpec,
@@ -69,6 +72,7 @@ class BarLabelDecorator<D> extends BarRendererDecorator<D> {
     this.labelPlacement = _defaultLabelPlacement,
     this.labelPadding = _defaultLabelPadding,
     this.labelVerticalPosition = _defaultlabelVerticalPosition,
+    this.unboundedWidth = false,
   })  : insideLabelStyleSpec = insideLabelStyleSpec ?? _defaultInsideLabelStyle,
         outsideLabelStyleSpec =
             outsideLabelStyleSpec ?? _defaultOutsideLabelStyle;
@@ -164,12 +168,19 @@ class BarLabelDecorator<D> extends BarRendererDecorator<D> {
       }
 
       // Set the max width, text style, and text direction.
-      labelElements = labelElements.map((labelElement) => labelElement
-        ..textStyle = calculatedLabelPosition == BarLabelPosition.inside
-            ? datumInsideLabelStyle
-            : datumOutsideLabelStyle
-        ..maxWidth = bounds.width
-        ..textDirection = rtl ? TextDirection.rtl : TextDirection.ltr);
+      labelElements = labelElements.map(
+        (labelElement) {
+          TextElement element = labelElement
+            ..textStyle = calculatedLabelPosition == BarLabelPosition.inside
+                ? datumInsideLabelStyle
+                : datumOutsideLabelStyle
+            ..textDirection = rtl ? TextDirection.rtl : TextDirection.ltr;
+          if (!unboundedWidth) {
+            element = element..maxWidth = bounds.width;
+          }
+          return element;
+        },
+      );
 
       // Total label height depends on the label element's text style.
       final totalLabelHeight = _getTotalLabelHeight(labelElements);
