@@ -1,3 +1,6 @@
+# 0.12.1
+* Add config: bar chart label width bounded conditionally.
+
 # 0.12.0
 * Expose `NumericScale`, `LinearScale` and `ScaleSpec`
 * Add functions to draw horizontal or vertical links.
